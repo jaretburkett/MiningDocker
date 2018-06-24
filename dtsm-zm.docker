@@ -1,0 +1,22 @@
+FROM nvidia/cuda:8.0-devel-ubuntu16.04
+
+LABEL maintainer="Jaret Burkett <jaretburkett@gmail.com>"
+
+# Install dependencies
+RUN apt-get -qq update                  \
+    && apt-get -qq install --assume-yes \
+        "wget"                          \
+        && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /tmp
+
+# download the miner
+RUN wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1JKeBTJshILqYpHiu7qRhjvcRhaa4NC5W' -O zm_0.6.1.tar.gz \
+    && tar -zxvf zm_0.6.1.tar.gz -C /tmp \
+    && mv zm_0.6.1 /dtsm-zm \
+    && rm zm_0.6.1.tar.gz
+
+WORKDIR /dtsm-zm
+
+# set ccminer as the entry point
+ENTRYPOINT ["./zm"]

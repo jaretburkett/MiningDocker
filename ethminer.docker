@@ -1,0 +1,22 @@
+FROM nvidia/cuda:8.0-devel-ubuntu16.04
+
+LABEL maintainer="Jaret Burkett <jaretburkett@gmail.com>"
+
+# Install dependencies
+RUN apt-get -qq update                  \
+    && apt-get -qq install --assume-yes \
+        "wget"                          \
+        && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /tmp
+
+# download the miner
+RUN wget 'https://github.com/ethereum-mining/ethminer/releases/download/v0.14.0/ethminer-0.14.0-Linux.tar.gz' -O ethminer.tar.gz \
+    && tar -zxvf ethminer.tar.gz -C /tmp \
+    && mv bin /ethminer \
+    && rm ethminer.tar.gz
+
+WORKDIR /ethminer
+
+# set ccminer as the entry point
+ENTRYPOINT ["./ethminer", "--cuda"]

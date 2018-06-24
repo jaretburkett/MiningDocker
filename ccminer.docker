@@ -1,0 +1,31 @@
+FROM nvidia/cuda:8.0-devel-ubuntu16.04
+
+LABEL maintainer="Jaret Burkett <jaretburkett@gmail.com>"
+
+# Install dependencies
+RUN apt-get -qq update                  \
+    && apt-get -qq install --assume-yes \
+        "build-essential"               \
+        "git"                           \
+        "wget"                          \
+        "libcurl4-openssl-dev"          \
+        "libssl-dev"                    \
+        "automake"                      \
+        "autotools-dev"                 \
+        "build-essential"               \
+        "libjansson-dev"                \
+        "pkg-config"                    \
+        "gcc-5"                         \
+        "g++-5"                         \
+        && rm -rf /var/lib/apt/lists/*
+
+# clone the repo
+RUN git clone --depth=1 -b linux https://github.com/tpruvot/ccminer.git /ccminer
+
+WORKDIR /ccminer
+
+# build it
+RUN /bin/bash build.sh
+
+# set ccminer as the entry point
+ENTRYPOINT ["./ccminer"]
